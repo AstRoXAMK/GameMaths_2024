@@ -20,6 +20,8 @@ public class BezierPath : MonoBehaviour
 
     [Range(0.0f, 1.0f)]
     public float t_stimulate = 0.0f;
+    private float elapsedTime = 0.0f;
+    public float speed = 1.0f;
 
     [Range(11, 255)]
     public int slices = 32;
@@ -61,6 +63,40 @@ public class BezierPath : MonoBehaviour
         Vector3 second_c = points[seg_start + 1].getFirstControlPoint();
 
         return getBezierOrientation(t_value, first_a, first_c, second_c, second_a);
+    }
+
+    private void Update(){
+        if (MyObjectPrefab != null)
+        {
+            elapsedTime += Time.deltaTime;
+            if (elapsedTime >= speed)
+            {
+                elapsedTime = 0.0f;
+            }
+            int numOfPoints = points.Length;
+            float partTime = speed / numOfPoints;
+            int currentPart = (int)(elapsedTime / partTime);
+            float updatedElapsedTime = elapsedTime - (currentPart * partTime);
+
+            float t = updatedElapsedTime / partTime;
+            int secondIndex;
+
+            if (currentPart < numOfPoints - 1 || !ClosedPath)
+            {
+                secondIndex = currentPart + 1;
+            }
+            else
+            {
+                secondIndex = 0;
+            }
+
+            OrientationPoint op = getBezierOrientation(t, points[currentPart].getAnchorPoint(),
+                points[currentPart].getSecondControlPoint(), points[secondIndex].getFirstControlPoint(),
+                points[secondIndex].getAnchorPoint());
+
+            MyObjectPrefab.transform.position = op.position;
+            MyObjectPrefab.transform.rotation = op.rotation;
+        }
     }
 
     // Draw the path and the object in the Unity Editor
@@ -232,29 +268,6 @@ public class BezierPath : MonoBehaviour
                 triangles.Add(index_end);
             }
         }
-
-        IEnumerator FollowPath()
-        {
-            for (float t = 0; t <= 1; t += t_stimulate)
-            {
-                // Calculate the current segment and t value within that segment
-                int seg_start = (int)(t * (nOfPoints - 1));
-                float t_value = (t * (nOfPoints - 1)) - seg_start;
-
-                // Calculate the position on the Bezier curve
-                Vector3 position = CreateRaceTrack(seg_start, t_value).position;
-                // Move the object to the calculated position
-                MyObjectPrefab.transform.position = position;
-
-                yield return new WaitForSeconds(0.1f);
-            }
-
-            
-        }
-
-        
-
-        StartCoroutine(FollowPath());
 
         mesh.SetVertices(vertices);
         mesh.SetTriangles(triangles, 0);

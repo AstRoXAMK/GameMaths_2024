@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "GameMaths.sln"
+    "dotnet.defaultSolution": "GameMaths_2024.sln"
 }
