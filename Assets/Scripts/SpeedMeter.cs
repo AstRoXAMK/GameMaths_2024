@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 
-public class RadioTrigger : MonoBehaviour
+public class SpeedMeter : MonoBehaviour
 {
     [Header("Game Objects")]
     public GameObject playerObject;
     public GameObject LookAt;
-    public GameObject Headlights;
+    public GameObject SpeedLimit;
+    public GameObject OverSpeed;
 
     [Header("Trigger Controller")]
     [Range(0, 180f)]
@@ -16,22 +18,18 @@ public class RadioTrigger : MonoBehaviour
     public float radius = 0.0f;
     public float height = 20.0f;
 
-    private void Update()
+    void Update()
     {
         if (Vector3.Distance(playerObject.transform.position, this.gameObject.transform.position) < radius)
         {
-            Headlights.SetActive(false);
-        }
-        else
-        {
-            Headlights.SetActive(true);
+            StartCoroutine(Speedster());
         }
     }
 
     private void DrawUnitCircle(Vector3 center, Color color)
     {
         Handles.color = color;
-        Handles.DrawWireArc(center, Vector3.down, Vector3.right,360, radius);
+        Handles.DrawWireArc(center, Vector3.down, Vector3.right, 360, radius);
     }
 
     private void OnDrawGizmos()
@@ -59,7 +57,7 @@ public class RadioTrigger : MonoBehaviour
             DrawUnitCircle(this.gameObject.transform.position, Color.green);
         }
 
-        if (playerLookDotProd >= DotProdThreshold && (playerObject.transform.position.y >= -height && playerObject.transform.position.y <= height))
+        if (playerLookDotProd >= DotProdThreshold && (playerObject.transform.position.z >= -height && playerObject.transform.position.z <= height))
         {
             Drawing.DrawVector(this.gameObject.transform.position, playerObject.transform.position - this.gameObject.transform.position, Color.red);
         }
@@ -76,5 +74,13 @@ public class RadioTrigger : MonoBehaviour
 
         // Center line
         Gizmos.DrawLine(npc + Vector3.forward * height / 2.0f, npc - Vector3.forward * height / 2.0f);
+    }
+
+    IEnumerator Speedster()
+    {
+        // Set the speed limit game object to inactive after 0.5 seconds
+        SpeedLimit.SetActive(false);
+        yield return new WaitForSeconds(0.3f);
+        OverSpeed.SetActive(true);
     }
 }

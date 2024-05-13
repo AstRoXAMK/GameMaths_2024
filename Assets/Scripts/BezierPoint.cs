@@ -17,12 +17,11 @@ public class BezierPoint : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        // Draw lines
-        Gizmos.color = Color.white;
-        Gizmos.DrawLine(getFirstControlPoint(), getAnchorPoint());
-        Gizmos.DrawLine(getAnchorPoint(), getSecondControlPoint());
         //Draw Control points
         if (drawControlPoints){
+            Gizmos.color = Color.white;
+            Gizmos.DrawLine(getFirstControlPoint(), getAnchorPoint());
+            Gizmos.DrawLine(getAnchorPoint(), getSecondControlPoint());
             Gizmos.color = Color.magenta;
             Gizmos.DrawSphere(getFirstControlPoint(), 0.1f * HandleUtility.GetHandleSize(getFirstControlPoint()));
             Gizmos.DrawSphere(getSecondControlPoint(), 0.1f * HandleUtility.GetHandleSize(getSecondControlPoint()));
