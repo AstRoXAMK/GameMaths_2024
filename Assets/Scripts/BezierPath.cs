@@ -16,7 +16,6 @@ public class BezierPath : MonoBehaviour
 
     public bool ClosedPath = false;
     public bool drawSegments = false;
-    public bool loopTrack = false;
 
     [Range(0.0f, 1.0f)]
     public float t_stimulate = 0.0f;
@@ -138,21 +137,17 @@ public class BezierPath : MonoBehaviour
             Vector3 first_control = points[nSeg].getSecondControlPoint();
             Vector3 second_control = points[0].getFirstControlPoint();
 
-            
-
             if (drawSegments){
                 Handles.DrawBezier(first_anchor, second_anchor, first_control, second_control, Color.green, texture: null, 5f);
             }
 
-            //Vector3 first_vertex
-
-            for (int i = 0; i < shape2D.VertexCount - 2; i += 2)
+            for (int i = 0; i < shape2D.VertexCount - 2; i += 1)
             {
                 int first_start = slices * shape2D.VertexCount + i + 1;
                 int first_end = first_start + 1;
 
                 int second_start = i + 1;
-                int second_end = second_start + 1;
+                int second_end = second_start + 2;
 
                 // 1st triangle
                 triangles.Add(first_start);
@@ -163,7 +158,6 @@ public class BezierPath : MonoBehaviour
                 triangles.Add(first_start);
                 triangles.Add(second_end);
                 triangles.Add(first_end);
-
             }
         }
 

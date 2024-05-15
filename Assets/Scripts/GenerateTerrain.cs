@@ -31,8 +31,37 @@ public class GenerateTerrain : MonoBehaviour
     [Range(-5.0f, 5.0f)]
     public float clampingValue = 0.0f;
 
+    [SerializeField] Gradient terrainGradient;
+    [SerializeField] Material mat;
+    private Texture2D gradientTexture;
+
     private void OnValidate(){
         GenerateMesh();
+        GradientToText();
+
+        float minTerrainHeight = terrainMesh.bounds.min.y + transform.position.y;
+        float maxTerrainHeight = terrainMesh.bounds.max.y + transform.position.y;
+
+        if (mat != null)
+        {
+            mat.SetTexture("terrainGradient", gradientTexture);
+            mat.SetFloat("minTerrainHeight", minTerrainHeight);
+            mat.SetFloat("maxTerrainHeight", maxTerrainHeight);
+        }
+    }
+
+    private void GradientToText()
+    {
+        gradientTexture = new Texture2D(1, 100);
+        Color[] colors = new Color[100];
+
+        for (int i = 0; i < 100; i++)
+        {
+            colors[i] = terrainGradient.Evaluate((float)i / 100.0f);
+        }
+
+        gradientTexture.SetPixels(colors);
+        gradientTexture.Apply();
     }
 
     public void GenerateMesh()
